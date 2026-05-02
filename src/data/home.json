@@ -1,10 +1,10 @@
 {
   "brand": {
-    "name": "Rea's Blog",
+    "name": "Rea's Home",
     "logo": {
       "icon": "sparkles",
       "imageSrc": "/logo.png",
-      "alt": "Rea's Blog logo"
+      "alt": "Rea's Home logo"
     }
   },
   "hero": {
@@ -109,6 +109,9 @@
       "xkinput/keytao-bot",
       "xkinput/keytao-installer"
     ]
+  },
+  "social": {
+    "twitterUsername": "realqshu"
   },
   "projects": [
     {

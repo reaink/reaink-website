@@ -39,7 +39,8 @@ const projects = selectProjectsByRepositories(
 			featuredProjects={featuredProjects}
 			projects={projects}
 			totalProjectCount={projectCount}
-			username={homeData.github.username}
+			githubUsername={homeData.github.username}
+			twitterUsername={homeData.social.twitterUsername}
 			postCount={allPosts.length}
 			hero={homeData.hero}
 		/>

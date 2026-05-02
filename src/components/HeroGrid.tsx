@@ -11,36 +11,111 @@ import { homeData, resolveHeroStatValue, type HomeHero, type HomeProject, type S
 
 function TwitterTimeline({ username }: { username: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const normalizedUsername = username.replace(/^@+/, '').trim();
+  const [timelineState, setTimelineState] = useState<'loading' | 'ready' | 'error'>('loading');
 
   useEffect(() => {
-    const load = () => {
-      if ((window as any).twttr?.widgets && containerRef.current) {
-        containerRef.current.innerHTML = `<a class="twitter-timeline" data-height="260" data-chrome="noheader nofooter noborders transparent" data-tweet-limit="3" href="https://twitter.com/${username}">Loading tweets...</a>`;
-        (window as any).twttr.widgets.load(containerRef.current);
+    if (!normalizedUsername || !containerRef.current) {
+      setTimelineState('error');
+      return;
+    }
+
+    let disposed = false;
+    let pollTimer: number | undefined;
+    let failSafeTimer: number | undefined;
+
+    setTimelineState('loading');
+
+    const renderTimeline = async () => {
+      const widgets = (window as any).twttr?.widgets;
+      const container = containerRef.current;
+
+      if (!widgets || !container) {
+        return;
+      }
+
+      container.innerHTML = '';
+
+      try {
+        const timeline = await widgets.createTimeline(
+          {
+            sourceType: 'profile',
+            screenName: normalizedUsername,
+          },
+          container,
+          {
+            height: '260',
+            chrome: 'noheader nofooter noborders transparent',
+            tweetLimit: 3,
+          },
+        );
+
+        if (disposed) {
+          return;
+        }
+
+        if (failSafeTimer) {
+          window.clearTimeout(failSafeTimer);
+        }
+        setTimelineState(timeline ? 'ready' : 'error');
+      } catch {
+        if (!disposed) {
+          if (failSafeTimer) {
+            window.clearTimeout(failSafeTimer);
+          }
+          setTimelineState('error');
+        }
       }
     };
 
+    const waitForWidgets = () => {
+      if ((window as any).twttr?.widgets) {
+        void renderTimeline();
+        return;
+      }
+
+      pollTimer = window.setInterval(() => {
+        if ((window as any).twttr?.widgets) {
+          if (pollTimer) {
+            window.clearInterval(pollTimer);
+          }
+          void renderTimeline();
+        }
+      }, 200);
+    };
+
+    failSafeTimer = window.setTimeout(() => {
+      if (!disposed && timelineState !== 'ready') {
+        setTimelineState('error');
+      }
+    }, 5000);
+
     if ((window as any).twttr?.widgets) {
-      load();
+      void renderTimeline();
     } else {
       const existing = document.querySelector('script[src*="platform.twitter.com"]');
       if (existing) {
-        const timer = setInterval(() => {
-          if ((window as any).twttr?.widgets) {
-            clearInterval(timer);
-            load();
-          }
-        }, 200);
-        return () => clearInterval(timer);
+        waitForWidgets();
       } else {
         const s = document.createElement('script');
         s.src = 'https://platform.twitter.com/widgets.js';
         s.async = true;
-        s.onload = load;
+        s.onload = waitForWidgets;
+        s.onerror = () => setTimelineState('error');
         document.head.appendChild(s);
       }
     }
-  }, [username]);
+
+    return () => {
+      disposed = true;
+      if (pollTimer) {
+        window.clearInterval(pollTimer);
+      }
+      if (failSafeTimer) {
+        window.clearTimeout(failSafeTimer);
+      }
+    };
+  }, [normalizedUsername]);
 
   return (
     <div>
@@ -50,16 +125,35 @@ function TwitterTimeline({ username }: { username: string }) {
           <p className="mt-1 text-xs text-muted-foreground">引用账号最近动态，保留和主视觉一致的留白与圆角。</p>
         </div>
         <a
-          href={`https://twitter.com/${username}`}
+          href={`https://x.com/${normalizedUsername}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-0.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
+          className="flex mt-0.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
         >
-          @{username} <ArrowRight className="h-3.5 w-3.5" />
+          @{normalizedUsername} <ArrowRight className="h-3.5 w-3.5" />
         </a>
       </div>
-      <div ref={containerRef} className="flex min-h-65 items-center justify-center overflow-hidden rounded-[1.5rem] border border-black/5 bg-white/60 dark:border-white/10 dark:bg-white/6">
-        <span className="text-sm text-muted-foreground">Loading tweets...</span>
+      <div className="relative min-h-65 overflow-hidden rounded-[1.5rem] border border-black/5 bg-white/60 dark:border-white/10 dark:bg-white/6">
+        <div ref={containerRef} className="h-full min-h-65" />
+        {timelineState === 'loading' && (
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+            <span className="text-sm text-muted-foreground">Loading tweets...</span>
+          </div>
+        )}
+        {timelineState === 'error' && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-6 text-center">
+            <p className="text-sm text-muted-foreground">X timeline 加载失败，可能是网络或脚本被拦截。</p>
+            <a
+              href={`https://x.com/${normalizedUsername}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-full border border-black/8 bg-white/80 px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-white dark:border-white/10 dark:bg-white/8 dark:hover:bg-white/12"
+            >
+              打开 @{normalizedUsername}
+              <ArrowRight className="h-4 w-4" />
+            </a>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -73,7 +167,8 @@ export default function HeroGrid({
   featuredProjects,
   projects,
   totalProjectCount,
-  username,
+  githubUsername,
+  twitterUsername,
   postCount,
   hero,
 }: {
@@ -81,7 +176,8 @@ export default function HeroGrid({
   featuredProjects: HomeProject[];
   projects: HomeProject[];
   totalProjectCount: number;
-  username: string;
+  githubUsername: string;
+  twitterUsername: string;
   postCount: number;
   hero: HomeHero;
 }) {
@@ -162,7 +258,7 @@ export default function HeroGrid({
                 <div className="min-w-0 max-w-full space-y-4">
                   <Card className={cardCls}>
                     <CardContent>
-                      <GitHubCalendar username={username} year={new Date().getFullYear()} />
+                      <GitHubCalendar username={githubUsername} year={new Date().getFullYear()} />
                     </CardContent>
                   </Card>
 
@@ -181,7 +277,7 @@ export default function HeroGrid({
               ) : (
                 <Card className={cardCls}>
                   <CardContent>
-                    <TwitterTimeline username={username} />
+                    <TwitterTimeline username={twitterUsername} />
                   </CardContent>
                 </Card>
               )}

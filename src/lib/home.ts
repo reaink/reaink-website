@@ -35,6 +35,10 @@ export interface HomeGitHubConfig {
   projectRepositories: string[];
 }
 
+export interface HomeSocialConfig {
+  twitterUsername: string;
+}
+
 export interface HomeCategoryRule {
   match: string;
   icon: IconName;
@@ -91,6 +95,7 @@ export interface HomeData {
     posts: HomeSection;
   };
   github: HomeGitHubConfig;
+  social: HomeSocialConfig;
   projects: HomeProject[];
   postCategoryIcons: HomeCategoryRule[];
 }
