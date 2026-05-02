@@ -1,0 +1,59 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { getCollection } from "astro:content";
+import HeroGrid from "@/components/HeroGrid";
+import SectionPanel from "@/components/home/SectionPanel.astro";
+import ProjectList from "@/components/home/ProjectList";
+import PostList from "@/components/home/PostList.astro";
+import {
+	homeData,
+	selectProjectsByRepositories,
+	serializePosts,
+	type SerializedPost,
+} from "@/lib/home";
+
+const allPosts = (await getCollection("blog")).sort((a, b) => {
+	const dateA = a.data.date ? new Date(a.data.date).getTime() : 0;
+	const dateB = b.data.date ? new Date(b.data.date).getTime() : 0;
+	return dateB - dateA;
+});
+
+const recentPosts: SerializedPost[] = serializePosts(allPosts.slice(0, 5));
+const allProjects = homeData.projects;
+const projectCount = homeData.github.projectCountFallback;
+const featuredProjects = selectProjectsByRepositories(
+	allProjects,
+	homeData.github.featuredRepositories,
+);
+const projects = selectProjectsByRepositories(
+	allProjects,
+	homeData.github.projectRepositories,
+);
+---
+
+<Layout title="Reaink · 个人网站" wide={true} pageBackdrop={true}>
+	<section class="relative isolate mb-8">
+		<HeroGrid
+			client:only="react"
+			posts={recentPosts}
+			featuredProjects={featuredProjects}
+			projects={projects}
+			totalProjectCount={projectCount}
+			username={homeData.github.username}
+			postCount={allPosts.length}
+			hero={homeData.hero}
+		/>
+	</section>
+
+	<section class="relative">
+		<div class="grid gap-4 xl:grid-cols-[1.05fr_1.35fr] xl:gap-5">
+			<SectionPanel {...homeData.sections.projects}>
+				<ProjectList projects={projects} />
+			</SectionPanel>
+
+			<SectionPanel {...homeData.sections.posts}>
+				<PostList posts={recentPosts} />
+			</SectionPanel>
+		</div>
+	</section>
+</Layout>

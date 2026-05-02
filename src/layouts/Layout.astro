@@ -1,0 +1,298 @@
+---
+import "../styles/global.css";
+import { Eye, MoonStar, Sparkles, Sun, Users } from "lucide-react";
+import InteractiveBackdrop from "@/components/InteractiveBackdrop";
+import { homeData } from "@/lib/home";
+import { iconMap } from "@/lib/icons";
+
+interface Props {
+  title: string;
+  description?: string;
+  showPageview?: boolean;
+  wide?: boolean;
+  pageBackdrop?: boolean;
+}
+
+const {
+  title,
+  description = "Reaink 的个人网站",
+  showPageview = false,
+  wide = false,
+  pageBackdrop = false,
+} = Astro.props;
+const currentPath = Astro.url.pathname;
+const navLinks = [
+  { href: "/blogs", label: "博客" },
+  { href: "/friends", label: "朋友们" },
+];
+const shellWidth = wide ? "max-w-[96rem]" : "max-w-4xl";
+const headerGlassCls = pageBackdrop
+  ? "border-b border-white/40 bg-white/22 shadow-[0_10px_40px_rgba(15,23,42,0.04)] backdrop-blur-2xl supports-[backdrop-filter]:bg-white/16 dark:border-white/10 dark:bg-slate-950/45 dark:shadow-[0_10px_40px_rgba(2,6,23,0.45)] dark:supports-[backdrop-filter]:bg-slate-950/35"
+  : "border-b border-border/40 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60 dark:border-white/10 dark:bg-slate-950/70 dark:supports-[backdrop-filter]:bg-slate-950/55";
+const BrandIcon = iconMap[homeData.brand.logo.icon] ?? Sparkles;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <title>{title}</title>
+    <script is:inline>
+      (() => {
+        const storageKey = "theme";
+        const root = document.documentElement;
+
+        try {
+          const savedTheme = window.localStorage.getItem(storageKey);
+          const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
+            .matches
+            ? "dark"
+            : "light";
+          const theme =
+            savedTheme === "dark" || savedTheme === "light"
+              ? savedTheme
+              : systemTheme;
+          root.classList.toggle("dark", theme === "dark");
+          root.dataset.theme = theme;
+          root.style.colorScheme = theme;
+        } catch {
+          root.classList.remove("dark");
+          root.dataset.theme = "light";
+          root.style.colorScheme = "light";
+        }
+      })();
+    </script>
+    <!-- busuanzi site statistics -->
+    <script
+      async
+      src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  </head>
+  <body
+    class="relative min-h-screen overflow-x-hidden bg-background text-foreground antialiased selection:bg-primary/12 selection:text-foreground"
+  >
+    {
+      pageBackdrop && (
+        <div class="pointer-events-none absolute inset-x-0 top-0 z-0 h-224 sm:h-240 lg:h-256">
+          <InteractiveBackdrop client:only="react" />
+          <div class="absolute inset-x-0 bottom-0 h-40 bg-linear-to-b from-transparent via-white/30 to-white dark:via-slate-950/20 dark:to-slate-950" />
+        </div>
+      )
+    }
+
+    <header class={`sticky top-0 z-50 ${headerGlassCls}`}>
+      <nav
+        class={`mx-auto flex ${shellWidth} items-center justify-between px-4 py-3.5`}
+      >
+        <a
+          href="/"
+          class="flex items-center gap-2 text-lg font-bold tracking-tight hover:opacity-80 transition-opacity"
+        >
+          {
+            homeData.brand.logo.imageSrc ? (
+              <img
+                src={homeData.brand.logo.imageSrc}
+                alt={homeData.brand.logo.alt ?? homeData.brand.name}
+                class="h-6 w-6 rounded-md object-cover"
+              />
+            ) : (
+              <BrandIcon className="h-4 w-4 text-primary" />
+            )
+          }
+          {homeData.brand.name}
+        </a>
+        <div class="flex items-center gap-1.5">
+          {
+            navLinks.map(({ href, label }) => (
+              <a
+                href={href}
+                class={`px-3 py-1.5 rounded-md text-sm transition-colors ${
+                  currentPath.startsWith(href)
+                    ? "bg-accent text-foreground font-medium"
+                    : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+                }`}
+              >
+                {label}
+              </a>
+            ))
+          }
+          <button
+            type="button"
+            data-theme-toggle
+            class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/60 bg-white/80 text-muted-foreground shadow-sm transition-all hover:-translate-y-0.5 hover:text-foreground dark:border-white/10 dark:bg-white/8 dark:text-slate-300 dark:hover:bg-white/12 dark:hover:text-white"
+            aria-label="切换夜间模式"
+            aria-pressed="false"
+            title="切换夜间模式"
+          >
+            <Sun className="h-4 w-4 dark:hidden" />
+            <MoonStar className="hidden h-4 w-4 dark:block" />
+          </button>
+        </div>
+      </nav>
+    </header>
+
+    <main class={`relative z-10 mx-auto ${shellWidth} px-4 py-6 lg:py-8`}>
+      {
+        showPageview && (
+          <div class="mb-4 flex items-center gap-1.5 text-xs text-muted-foreground">
+            <Eye className="h-3.5 w-3.5" />
+            本文阅读 <span id="busuanzi_value_page_pv">…</span> 次
+          </div>
+        )
+      }
+      <slot />
+    </main>
+
+    <footer class="relative z-10 border-t border-border/40 mt-20">
+      <div class={`mx-auto ${shellWidth} px-4 py-8`}>
+        <!-- Stats row -->
+        <div
+          class="flex justify-center gap-6 text-xs text-muted-foreground mb-4"
+        >
+          <span class="flex items-center gap-1">
+            <Users className="h-3.5 w-3.5" />
+            累计访客 <span id="busuanzi_value_site_uv">…</span>
+          </span>
+          <span class="flex items-center gap-1">
+            <Eye className="h-3.5 w-3.5" />
+            累计访问 <span id="busuanzi_value_site_pv">…</span> 次
+          </span>
+        </div>
+        <!-- Copyright -->
+        <div class="text-center text-xs text-muted-foreground space-y-1">
+          <p>
+            © 2018–{new Date().getFullYear()} Reaink · Built with
+            <a
+              href="https://astro.build"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="hover:text-foreground transition-colors">Astro</a
+            >
+          </p>
+          <p>
+            <a
+              href="https://beian.miit.gov.cn/"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="hover:text-foreground transition-colors"
+            >
+              陕ICP备19019970号
+            </a>
+          </p>
+        </div>
+      </div>
+    </footer>
+    <script is:inline>
+      (() => {
+        const storageKey = "theme";
+        const root = document.documentElement;
+        const media = window.matchMedia("(prefers-color-scheme: dark)");
+
+        const applyTheme = (theme) => {
+          root.classList.toggle("dark", theme === "dark");
+          root.dataset.theme = theme;
+          root.style.colorScheme = theme;
+          document.querySelectorAll("[data-theme-toggle]").forEach((button) => {
+            button.setAttribute("aria-pressed", String(theme === "dark"));
+          });
+        };
+
+        const resolveTheme = () => {
+          const savedTheme = window.localStorage.getItem(storageKey);
+          if (savedTheme === "dark" || savedTheme === "light") {
+            return savedTheme;
+          }
+
+          return media.matches ? "dark" : "light";
+        };
+
+        const canAnimateTheme = () => {
+          return (
+            typeof document.startViewTransition === "function" &&
+            !window.matchMedia("(prefers-reduced-motion: reduce)").matches
+          );
+        };
+
+        const getThemeTransitionOrigin = (toggle, event) => {
+          if (event instanceof MouseEvent) {
+            return { x: event.clientX, y: event.clientY };
+          }
+
+          const rect = toggle.getBoundingClientRect();
+
+          return {
+            x: rect.left + rect.width / 2,
+            y: rect.top + rect.height / 2,
+          };
+        };
+
+        const animateThemeTransition = async (nextTheme, origin) => {
+          if (!canAnimateTheme()) {
+            window.localStorage.setItem(storageKey, nextTheme);
+            applyTheme(nextTheme);
+            return;
+          }
+
+          const endRadius = Math.hypot(
+            Math.max(origin.x, window.innerWidth - origin.x),
+            Math.max(origin.y, window.innerHeight - origin.y),
+          );
+
+          const transition = document.startViewTransition(() => {
+            window.localStorage.setItem(storageKey, nextTheme);
+            applyTheme(nextTheme);
+          });
+
+          await transition.ready;
+
+          document.documentElement.animate(
+            {
+              clipPath: [
+                `circle(0px at ${origin.x}px ${origin.y}px)`,
+                `circle(${endRadius}px at ${origin.x}px ${origin.y}px)`,
+              ],
+            },
+            {
+              duration: 560,
+              easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+              pseudoElement: "::view-transition-new(root)",
+            },
+          );
+        };
+
+        applyTheme(resolveTheme());
+
+        document.addEventListener("click", async (event) => {
+          const target = event.target;
+          if (!(target instanceof Element)) {
+            return;
+          }
+
+          const toggle = target.closest("[data-theme-toggle]");
+          if (!(toggle instanceof HTMLElement)) {
+            return;
+          }
+
+          const nextTheme = root.classList.contains("dark") ? "light" : "dark";
+          const origin = getThemeTransitionOrigin(toggle, event);
+          await animateThemeTransition(nextTheme, origin);
+        });
+
+        const handleMediaChange = () => {
+          if (!window.localStorage.getItem(storageKey)) {
+            applyTheme(media.matches ? "dark" : "light");
+          }
+        };
+
+        if (typeof media.addEventListener === "function") {
+          media.addEventListener("change", handleMediaChange);
+        } else {
+          media.addListener(handleMediaChange);
+        }
+      })();
+    </script>
+  </body>
+</html>

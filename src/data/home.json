@@ -1,0 +1,227 @@
+{
+  "brand": {
+    "name": "Rea's Blog",
+    "logo": {
+      "icon": "sparkles",
+      "imageSrc": "/logo.png",
+      "alt": "Rea's Blog logo"
+    }
+  },
+  "hero": {
+    "availability": {
+      "label": "Love AI, Embrace the Future",
+      "icon": "sparkles"
+    },
+    "titlePrefix": "Hi, I'm",
+    "titleHighlight": "Rea",
+    "description": [
+      "拥抱 AI ，热爱技术，记录生活与代码。",
+      "一名开发者，专注 AI、前端、Node.js 与 Agent 开发和未来探索。"
+    ],
+    "facts": [
+      {
+        "icon": "mapPin",
+        "label": "中国·西安"
+      },
+      {
+        "icon": "clock3",
+        "label": "GMT+8"
+      }
+    ],
+    "stats": [
+      {
+        "source": "postCount",
+        "label": "文章"
+      },
+      {
+        "source": "projectCount",
+        "label": "项目"
+      },
+      {
+        "source": "custom",
+        "label": "访客",
+        "value": "3.1k+"
+      }
+    ],
+    "actions": [
+      {
+        "label": "GitHub",
+        "href": "https://github.com/reaink",
+        "variant": "primary",
+        "external": true,
+        "icon": "github"
+      },
+      {
+        "label": "Twitter",
+        "href": "https://x.com/realqshu",
+        "variant": "secondary",
+        "external": true,
+        "icon": "twitter"
+      },
+      {
+        "label": "邮箱",
+        "href": "mailto:hi@rea.ink",
+        "variant": "secondary",
+        "external": false,
+        "icon": "mail"
+      }
+    ]
+  },
+  "sections": {
+    "featuredProjects": {
+      "title": "精选开源项目",
+      "icon": "workflow"
+    },
+    "projects": {
+      "title": "开源项目",
+      "icon": "workflow",
+      "href": "https://github.com/reaink",
+      "linkLabel": "查看全部项目 →",
+      "external": true
+    },
+    "posts": {
+      "title": "最新文章",
+      "icon": "filePenLine",
+      "href": "/blogs",
+      "linkLabel": "查看全部文章 →",
+      "external": false
+    }
+  },
+  "github": {
+    "username": "reaink",
+    "projectCountFallback": 39,
+    "owners": [
+      {
+        "login": "reaink",
+        "type": "user"
+      },
+      {
+        "login": "xkinput",
+        "type": "org"
+      }
+    ],
+    "featuredRepositories": [
+      "xkinput/KeyTao",
+      "xkinput/keytao-next"
+    ],
+    "projectRepositories": [
+      "reaink/script2video",
+      "xkinput/keytao-bot",
+      "xkinput/keytao-installer"
+    ]
+  },
+  "projects": [
+    {
+      "repository": "xkinput/KeyTao",
+      "name": "KeyTao",
+      "desc": "星空键道6是星空系列输入法中的一款双拼音形码顶功中文输入法方案 ，「Rime键道」是该方案借助RIME开源输入平台的实现。",
+      "tags": [
+        "Lua",
+        "ime",
+        "rime"
+      ],
+      "stars": "126",
+      "forks": "13",
+      "color": "bg-indigo-500",
+      "initial": "KT",
+      "url": "https://github.com/xkinput/KeyTao",
+      "logo": "https://keytao.vercel.app/icon.png?icon.e4dbc6ed.png"
+    },
+    {
+      "repository": "xkinput/keytao-next",
+      "name": "keytao-next",
+      "desc": "KeyTao(键道) 输入方案词库更新管理系统",
+      "tags": [
+        "TypeScript"
+      ],
+      "stars": "2",
+      "forks": "0",
+      "color": "bg-sky-500",
+      "initial": "KN",
+      "url": "https://github.com/xkinput/keytao-next",
+      "logo": "https://keytao.vercel.app/icon.png?icon.e4dbc6ed.png"
+    },
+    {
+      "repository": "reaink/script2video",
+      "name": "script2video",
+      "desc": "An AI tool that turns a written script into a storyboard video. Paste your screenplay, and the AI automatically splits it into shots, generates prompts, produces each clip, and stitches everything into a final film.",
+      "tags": [
+        "TypeScript"
+      ],
+      "stars": "0",
+      "forks": "0",
+      "color": "bg-sky-500",
+      "initial": "S2",
+      "url": "https://github.com/reaink/script2video",
+      "logo": "https://s2v.rea.ink/favicon.ico?favicon.0x3dzn~oxb6tn.ico"
+    },
+    {
+      "repository": "xkinput/keytao-bot",
+      "name": "keytao-bot",
+      "desc": "键道输入法群机器人，基于 Nonebot2, NatCap 支持 QQ, Telegram",
+      "tags": [
+        "Python"
+      ],
+      "stars": "0",
+      "forks": "0",
+      "color": "bg-emerald-500",
+      "initial": "KB",
+      "url": "https://github.com/xkinput/keytao-bot"
+    },
+    {
+      "repository": "xkinput/keytao-installer",
+      "name": "keytao-installer",
+      "desc": "KeyTao(键道) 安装器",
+      "tags": [
+        "Rust"
+      ],
+      "stars": "0",
+      "forks": "0",
+      "color": "bg-orange-500",
+      "initial": "KI",
+      "url": "https://github.com/xkinput/keytao-installer"
+    }
+  ],
+  "postCategoryIcons": [
+    {
+      "match": "前端",
+      "icon": "monitor",
+      "iconClass": "bg-sky-100 text-sky-600"
+    },
+    {
+      "match": "后端",
+      "icon": "server",
+      "iconClass": "bg-emerald-100 text-emerald-600"
+    },
+    {
+      "match": "运维",
+      "icon": "wrench",
+      "iconClass": "bg-amber-100 text-amber-600"
+    },
+    {
+      "match": "Linux",
+      "icon": "terminal",
+      "iconClass": "bg-slate-200 text-slate-700"
+    },
+    {
+      "match": "诗词",
+      "icon": "scrollText",
+      "iconClass": "bg-fuchsia-100 text-fuchsia-600"
+    },
+    {
+      "match": "随笔",
+      "icon": "penLine",
+      "iconClass": "bg-orange-100 text-orange-600"
+    },
+    {
+      "match": "生活",
+      "icon": "leaf",
+      "iconClass": "bg-lime-100 text-lime-600"
+    },
+    {
+      "match": "音视",
+      "icon": "film",
+      "iconClass": "bg-rose-100 text-rose-600"
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map((post) => ({
+    params: { id: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+---
+
+<Layout title={`${post.data.title} · Reaink`} showPageview={true}>
+  <article class="prose prose-neutral dark:prose-invert max-w-none">
+    <header class="not-prose mb-8">
+      <div class="flex flex-wrap gap-2 mb-3">
+        {post.data.categories.map((cat) => (
+          <span class="rounded-full bg-primary/10 px-3 py-0.5 text-xs text-primary">{cat}</span>
+        ))}
+      </div>
+      <h1 class="text-3xl font-bold tracking-tight mb-3">{post.data.title}</h1>
+      <div class="flex items-center gap-4 text-sm text-muted-foreground">
+        {post.data.date && (
+          <time>{new Date(post.data.date).toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })}</time>
+        )}
+        {post.data.tags.length > 0 && (
+          <span>{post.data.tags.map((t) => `#${t}`).join(' ')}</span>
+        )}
+      </div>
+    </header>
+    <Content />
+  </article>
+
+  <div class="mt-12 pt-6 border-t border-border">
+    <a href="/blog" class="text-sm text-muted-foreground hover:text-foreground transition-colors">← 返回博客列表</a>
+  </div>
+</Layout>

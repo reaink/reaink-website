@@ -1,0 +1,61 @@
+---
+import { iconMap } from "@/lib/icons";
+import { getPostCategoryVisual, type SerializedPost } from "@/lib/home";
+
+interface Props {
+  posts: SerializedPost[];
+  dateFormat?: "short" | "long";
+  showReadingMinutes?: boolean;
+}
+
+const { posts, dateFormat = "short", showReadingMinutes = true } = Astro.props;
+---
+
+<div class="divide-y divide-border/45">
+  {
+    posts.map((post) => {
+      const categoryVisual = getPostCategoryVisual(post.categories);
+      const CategoryIcon = iconMap[categoryVisual.icon];
+
+      return (
+        <a
+          href={`/blogs/${post.id}`}
+          class="group -mx-2 flex flex-col items-start gap-2 rounded-[1.25rem] px-2 py-3.5 transition-colors hover:bg-white/70 dark:hover:bg-white/6 sm:-mx-3 sm:flex-row sm:items-center sm:gap-4 sm:px-3"
+        >
+          <div
+            class={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${categoryVisual.iconClass}`}
+          >
+            <CategoryIcon className="h-4 w-4" />
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="truncate text-sm font-medium transition-colors group-hover:text-primary">
+              {post.title}
+            </div>
+            <div class="mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-1">
+              {post.tags.slice(0, 3).map((tag) => (
+                <span class="text-xs text-muted-foreground">#{tag}</span>
+              ))}
+            </div>
+          </div>
+          <div class="space-y-0.5 text-left sm:shrink-0 sm:text-right">
+            {post.date && (
+              <div class="text-xs text-muted-foreground">
+                {new Date(post.date).toLocaleDateString(
+                  "zh-CN",
+                  dateFormat === "long"
+                    ? { year: "numeric", month: "long", day: "numeric" }
+                    : { year: "numeric", month: "2-digit", day: "2-digit" },
+                )}
+              </div>
+            )}
+            {showReadingMinutes && (
+              <div class="text-xs text-muted-foreground">
+                {post.readingMinutes} 分钟阅读
+              </div>
+            )}
+          </div>
+        </a>
+      );
+    })
+  }
+</div>

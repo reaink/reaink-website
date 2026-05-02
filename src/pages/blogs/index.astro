@@ -1,0 +1,44 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+import SectionPanel from '@/components/home/SectionPanel.astro';
+import PostList from '@/components/home/PostList.astro';
+import { FileText } from 'lucide-react';
+import { homeData, serializePosts } from '@/lib/home';
+
+const posts = (await getCollection('blog')).sort((a, b) => {
+  const dateA = a.data.date ? new Date(a.data.date).getTime() : 0;
+  const dateB = b.data.date ? new Date(b.data.date).getTime() : 0;
+  return dateB - dateA;
+});
+
+const serializedPosts = serializePosts(posts);
+
+// Group by category
+const categories = [...new Set(posts.flatMap((p) => p.data.categories))].filter(Boolean);
+---
+
+<Layout title="博客 · Reaink">
+  <div class="mb-8">
+    <h1 class="mb-2 flex items-center gap-2 text-3xl font-bold">
+      <FileText className="h-7 w-7 text-primary" />
+      博客
+    </h1>
+    <p class="text-muted-foreground">共 {posts.length} 篇文章</p>
+  </div>
+
+  <!-- Category filter (static links) -->
+  {categories.length > 0 && (
+    <div class="flex flex-wrap gap-2 mb-8">
+      {categories.map((cat) => (
+        <span class="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground">
+          {cat}
+        </span>
+      ))}
+    </div>
+  )}
+
+  <SectionPanel title={homeData.sections.posts.title} icon={homeData.sections.posts.icon}>
+    <PostList posts={serializedPosts} dateFormat="long" showReadingMinutes={true} />
+  </SectionPanel>
+</Layout>
