@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { ArrowRight, Workflow } from 'lucide-react';
 import { SiGithub, SiX } from '@icons-pack/react-simple-icons';
 import { Separator } from '@/components/ui/separator';
@@ -9,111 +9,165 @@ import ProjectList from '@/components/home/ProjectList';
 import { iconMap } from '@/lib/icons';
 import { homeData, resolveHeroStatValue, type HomeHero, type HomeProject, type SerializedPost } from '@/lib/home';
 
+interface FxTwitterAuthor {
+  name: string;
+  screen_name: string;
+  url: string;
+  avatar_url?: string | null;
+}
+
+interface FxTwitterStatus {
+  type: 'status';
+  id: string;
+  url: string;
+  text: string;
+  created_timestamp: number;
+  likes: number;
+  reposts: number;
+  replies: number;
+  views?: number | null;
+  author: FxTwitterAuthor;
+  replying_to?: {
+    screen_name: string;
+    status: string;
+  } | null;
+  reposted_by?: {
+    screen_name: string;
+  } | null;
+  media?: {
+    photos?: Array<unknown>;
+    videos?: Array<unknown>;
+  };
+}
+
+interface FxTwitterTimelineResponse {
+  code: number;
+  results?: FxTwitterStatus[];
+  cursor?: {
+    bottom?: string | null;
+  };
+}
+
+function formatRelativeTime(timestamp: number) {
+  const diffInSeconds = Math.max(0, Math.floor(Date.now() / 1000) - timestamp);
+
+  if (diffInSeconds < 60) {
+    return '刚刚';
+  }
+
+  if (diffInSeconds < 3600) {
+    return `${Math.floor(diffInSeconds / 60)} 分钟前`;
+  }
+
+  if (diffInSeconds < 86400) {
+    return `${Math.floor(diffInSeconds / 3600)} 小时前`;
+  }
+
+  if (diffInSeconds < 86400 * 7) {
+    return `${Math.floor(diffInSeconds / 86400)} 天前`;
+  }
+
+  return new Intl.DateTimeFormat('zh-CN', {
+    month: 'short',
+    day: 'numeric',
+  }).format(new Date(timestamp * 1000));
+}
+
+function compactCount(value?: number | null) {
+  if (!value) {
+    return '0';
+  }
+
+  if (value >= 10000) {
+    return `${(value / 10000).toFixed(value >= 100000 ? 0 : 1)}w`;
+  }
+
+  return String(value);
+}
+
 function TwitterTimeline({ username }: { username: string }) {
-  const containerRef = useRef<HTMLDivElement>(null);
   const normalizedUsername = username.replace(/^@+/, '').trim();
   const [timelineState, setTimelineState] = useState<'loading' | 'ready' | 'error'>('loading');
+  const [items, setItems] = useState<FxTwitterStatus[]>([]);
 
   useEffect(() => {
-    if (!normalizedUsername || !containerRef.current) {
+    if (!normalizedUsername) {
       setTimelineState('error');
+      setItems([]);
       return;
     }
 
-    let disposed = false;
-    let pollTimer: number | undefined;
-    let failSafeTimer: number | undefined;
+    const controller = new AbortController();
 
     setTimelineState('loading');
+    setItems([]);
 
-    const renderTimeline = async () => {
-      const widgets = (window as any).twttr?.widgets;
-      const container = containerRef.current;
-
-      if (!widgets || !container) {
-        return;
-      }
-
-      container.innerHTML = '';
-
+    const loadTimeline = async () => {
       try {
-        const timeline = await widgets.createTimeline(
-          {
-            sourceType: 'profile',
-            screenName: normalizedUsername,
-          },
-          container,
-          {
-            height: '260',
-            chrome: 'noheader nofooter noborders transparent',
-            tweetLimit: 3,
-          },
-        );
+        const nextItems: FxTwitterStatus[] = [];
+        let cursor: string | null | undefined;
+        let pageCount = 0;
 
-        if (disposed) {
+        while (nextItems.length < 3 && pageCount < 5) {
+          const query = new URLSearchParams({ count: '20' });
+
+          if (cursor) {
+            query.set('cursor', cursor);
+          }
+
+          const response = await fetch(`https://api.fxtwitter.com/2/profile/${encodeURIComponent(normalizedUsername)}/statuses?${query.toString()}`, {
+            signal: controller.signal,
+          });
+
+          if (!response.ok) {
+            throw new Error(`FxTwitter request failed with ${response.status}`);
+          }
+
+          const payload = await response.json() as FxTwitterTimelineResponse;
+          const pageItems = (payload.results ?? [])
+            .filter((item) => item.type === 'status')
+            .filter((item) => item.author.screen_name.toLowerCase() === normalizedUsername.toLowerCase())
+            .filter((item) => !item.reposted_by)
+            .filter((item) => !item.replying_to)
+            .sort((left, right) => right.created_timestamp - left.created_timestamp);
+
+          for (const item of pageItems) {
+            if (!nextItems.some((existingItem) => existingItem.id === item.id)) {
+              nextItems.push(item);
+            }
+            if (nextItems.length === 3) {
+              break;
+            }
+          }
+
+          cursor = payload.cursor?.bottom;
+          pageCount += 1;
+
+          if (!cursor || (payload.results?.length ?? 0) === 0) {
+            break;
+          }
+        }
+
+        nextItems.sort((left, right) => right.created_timestamp - left.created_timestamp);
+
+        if (controller.signal.aborted) {
           return;
         }
 
-        if (failSafeTimer) {
-          window.clearTimeout(failSafeTimer);
-        }
-        setTimelineState(timeline ? 'ready' : 'error');
+        setItems(nextItems.slice(0, 3));
+        setTimelineState(nextItems.length > 0 ? 'ready' : 'error');
       } catch {
-        if (!disposed) {
-          if (failSafeTimer) {
-            window.clearTimeout(failSafeTimer);
-          }
+        if (!controller.signal.aborted) {
           setTimelineState('error');
+          setItems([]);
         }
       }
     };
 
-    const waitForWidgets = () => {
-      if ((window as any).twttr?.widgets) {
-        void renderTimeline();
-        return;
-      }
-
-      pollTimer = window.setInterval(() => {
-        if ((window as any).twttr?.widgets) {
-          if (pollTimer) {
-            window.clearInterval(pollTimer);
-          }
-          void renderTimeline();
-        }
-      }, 200);
-    };
-
-    failSafeTimer = window.setTimeout(() => {
-      if (!disposed && timelineState !== 'ready') {
-        setTimelineState('error');
-      }
-    }, 5000);
-
-    if ((window as any).twttr?.widgets) {
-      void renderTimeline();
-    } else {
-      const existing = document.querySelector('script[src*="platform.twitter.com"]');
-      if (existing) {
-        waitForWidgets();
-      } else {
-        const s = document.createElement('script');
-        s.src = 'https://platform.twitter.com/widgets.js';
-        s.async = true;
-        s.onload = waitForWidgets;
-        s.onerror = () => setTimelineState('error');
-        document.head.appendChild(s);
-      }
-    }
+    void loadTimeline();
 
     return () => {
-      disposed = true;
-      if (pollTimer) {
-        window.clearInterval(pollTimer);
-      }
-      if (failSafeTimer) {
-        window.clearTimeout(failSafeTimer);
-      }
+      controller.abort();
     };
   }, [normalizedUsername]);
 
@@ -122,7 +176,6 @@ function TwitterTimeline({ username }: { username: string }) {
       <div className="mb-4 flex items-start justify-between gap-3">
         <div>
           <div className="text-[15px] font-semibold text-foreground">X / Twitter</div>
-          <p className="mt-1 text-xs text-muted-foreground">引用账号最近动态，保留和主视觉一致的留白与圆角。</p>
         </div>
         <a
           href={`https://x.com/${normalizedUsername}`}
@@ -134,15 +187,82 @@ function TwitterTimeline({ username }: { username: string }) {
         </a>
       </div>
       <div className="relative min-h-65 overflow-hidden rounded-[1.5rem] border border-black/5 bg-white/60 dark:border-white/10 dark:bg-white/6">
-        <div ref={containerRef} className="h-full min-h-65" />
-        {timelineState === 'loading' && (
-          <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-            <span className="text-sm text-muted-foreground">Loading tweets...</span>
-          </div>
-        )}
-        {timelineState === 'error' && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-6 text-center">
-            <p className="text-sm text-muted-foreground">X timeline 加载失败，可能是网络或脚本被拦截。</p>
+        <div className="flex min-h-65 flex-col gap-4 p-5 sm:p-6">
+          {timelineState === 'loading' && (
+            <div className="flex min-h-53 flex-col justify-center gap-3 rounded-[1.35rem] border border-dashed border-black/8 bg-white/70 px-5 text-sm text-muted-foreground dark:border-white/10 dark:bg-white/8">
+              <div className="h-2.5 w-24 animate-pulse rounded-full bg-black/8 dark:bg-white/12" />
+              <div className="h-2.5 w-full animate-pulse rounded-full bg-black/6 dark:bg-white/10" />
+              <div className="h-2.5 w-[82%] animate-pulse rounded-full bg-black/6 dark:bg-white/10" />
+              <span>正在从 FxTwitter 拉取最新动态...</span>
+            </div>
+          )}
+
+          {timelineState === 'ready' && items.length > 0 && (
+            <div className="space-y-3">
+              {items.map((item, index) => {
+                const hasMedia = (item.media?.photos?.length ?? 0) > 0 || (item.media?.videos?.length ?? 0) > 0;
+
+                return (
+                  <a
+                    key={item.id}
+                    href={item.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group block rounded-[1.35rem] border border-black/6 bg-white/78 p-4 transition-all hover:-translate-y-0.5 hover:border-black/10 hover:bg-white dark:border-white/10 dark:bg-white/8 dark:hover:bg-white/10"
+                  >
+                    <div className="mb-3 flex items-center justify-between gap-3 text-xs text-muted-foreground">
+                      <div className="flex items-center gap-2">
+                        {index === 0 && item.author.avatar_url && (
+                          <img
+                            src={item.author.avatar_url}
+                            alt={item.author.name}
+                            className="h-6 w-6 rounded-full border border-black/6 dark:border-white/10"
+                          />
+                        )}
+                        <span className="font-medium text-foreground/85">{item.author.name}</span>
+                        <span>@{item.author.screen_name}</span>
+                      </div>
+                      <span>{formatRelativeTime(item.created_timestamp)}</span>
+                    </div>
+
+                    <p className="line-clamp-4 whitespace-pre-line text-sm leading-7 text-foreground/88 dark:text-slate-100/88">
+                      {item.text}
+                    </p>
+
+                    <div className="mt-4 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+                      <span>{compactCount(item.likes)} 赞</span>
+                      <span>{compactCount(item.reposts)} 转发</span>
+                      <span>{compactCount(item.replies)} 回复</span>
+                      {item.views ? <span>{compactCount(item.views)} 浏览</span> : null}
+                      {hasMedia ? <span className="rounded-full bg-black/5 px-2 py-1 dark:bg-white/8">含媒体</span> : null}
+                    </div>
+                  </a>
+                );
+              })}
+            </div>
+          )}
+
+          {timelineState === 'error' && (
+            <div className="flex min-h-53 flex-col justify-between gap-6 rounded-[1.35rem] border border-black/6 bg-white/70 p-5 dark:border-white/10 dark:bg-white/8">
+              <div className="space-y-3">
+                <div className="inline-flex items-center gap-2 rounded-full border border-black/6 bg-white/80 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.22em] text-muted-foreground dark:border-white/10 dark:bg-white/8">
+                  FxTwitter Unavailable
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-lg font-semibold tracking-[-0.03em] text-foreground">实时动态暂时不可用。</h3>
+                  <p className="text-sm leading-7 text-muted-foreground">
+                    第三方 API 没返回可用结果，或者当前网络链路把请求掐掉了。面板保留账号入口，避免首页直接空掉。
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="text-xs text-muted-foreground">如果你后面嫌这个方案不稳，下一步就该改成服务端缓存，不要继续硬顶前端直连。</span>
+              </div>
+            </div>
+          )}
+
+          <div className="flex flex-wrap items-center gap-3 pt-1">
             <a
               href={`https://x.com/${normalizedUsername}`}
               target="_blank"
@@ -153,7 +273,7 @@ function TwitterTimeline({ username }: { username: string }) {
               <ArrowRight className="h-4 w-4" />
             </a>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
