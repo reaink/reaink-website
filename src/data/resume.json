@@ -1,0 +1,265 @@
+{
+  "seo": {
+    "title": "刘玄 · AI Agent / 前端工程师简历",
+    "description": "刘玄的结构化在线简历，聚焦 AI Agent、前端工程、钱包生态与全栈交付经验。",
+    "pdfFileName": "刘玄-5年经验-前端工程师-简历.pdf",
+    "updatedAt": "2026-05"
+  },
+  "basics": {
+    "name": "刘玄",
+    "title": "AI Agent Frontend Engineer",
+    "summary": "5 年以上前端与全栈协作经验，长期使用 Next.js、React、Vue、TypeScript、Node.js 构建 Web 产品。近两年重点投入 AI Agent、MCP、A2A、钱包与跨端应用方向，熟悉从前端交互、服务端接口到部署上线的完整交付链路。",
+    "location": "中国 · 西安",
+    "experience": "5+ 年",
+    "focus": [
+      "AI Agent",
+      "Next.js / React / Vue",
+      "Node.js / GraphQL",
+      "Crypto / Wallet",
+      "Linux / NixOS",
+      "Remote / 远程"
+    ]
+  },
+  "stats": [
+    {
+      "label": "前端 / 全栈",
+      "value": "5+ 年",
+      "hint": "React、Vue、Node.js"
+    },
+    {
+      "label": "AI / Agent",
+      "value": "2 年",
+      "hint": "MCP、A2A、Prompt、工具链"
+    },
+    {
+      "label": "钱包 / Crypto",
+      "value": "3 年",
+      "hint": "MetaMask Snap、XVerse、dApp"
+    }
+  ],
+  "contacts": [
+    {
+      "label": "个人网站",
+      "value": "rea.ink",
+      "href": "https://rea.ink",
+      "icon": "fileText"
+    },
+    {
+      "label": "GitHub",
+      "value": "github.com/reaink",
+      "href": "https://github.com/reaink",
+      "icon": "github"
+    },
+    {
+      "label": "手机",
+      "value": "187-2900-2793",
+      "href": "tel:18729002793",
+      "icon": "atSign"
+    },
+    {
+      "label": "微信",
+      "value": "18729002793",
+      "icon": "sparkles"
+    },
+    {
+      "label": "Twitter",
+      "value": "x.com/realqshu",
+      "href": "https://x.com/realqshu",
+      "icon": "twitter"
+    },
+    {
+      "label": "邮箱",
+      "value": "hi@rea.ink",
+      "href": "mailto:hi@rea.ink",
+      "icon": "mail"
+    }
+  ],
+  "skillGroups": [
+    {
+      "title": "AI / Agent",
+      "icon": "workflow",
+      "items": [
+        "Claude Code",
+        "Codex",
+        "MCP",
+        "A2A",
+        "Prompt Tuning",
+        "Tooling Integration"
+      ]
+    },
+    {
+      "title": "Frontend",
+      "icon": "monitor",
+      "items": [
+        "Next.js",
+        "React",
+        "Vue",
+        "Nuxt",
+        "TypeScript",
+        "Tailwind",
+        "HeroUI"
+      ]
+    },
+    {
+      "title": "Backend / Infra",
+      "icon": "server",
+      "items": [
+        "Node.js",
+        "GraphQL",
+        "Prisma",
+        "TypeORM",
+        "Django",
+        "Koa",
+        "Linux"
+      ]
+    },
+    {
+      "title": "Cross-platform",
+      "icon": "terminal",
+      "items": [
+        "Tauri",
+        "Electron",
+        "UniApp",
+        "Vite",
+        "Rsbuild",
+        "Git"
+      ]
+    }
+  ],
+  "experienceItems": [
+    {
+      "company": "Verisense Network",
+      "team": "技术部",
+      "period": "2025.02 - 至今",
+      "summary": "负责 AI 产品与平台类项目的前后端开发，覆盖 Agent、MCP、统一登录、钱包接入与电商链路。",
+      "highlights": [
+        "完成 Sense Space 的 Agents、MiniApps、MCP 发现分发、统一认证登录、审核上架与 token 体系落地。",
+        "落地 Sense Mall 基于 UCP 的电商链路，串联多商户接入、商品搜索与详情代理、checkout session 管理到下单闭环。",
+        "参与 Super Katryna 与 py-agents 智能体体系建设，推进主代理 / subagent 编排和工具 / 技能执行框架。"
+      ],
+      "stack": [
+        "React",
+        "TypeScript",
+        "Node.js",
+        "Agent",
+        "MCP",
+        "Wallet"
+      ]
+    },
+    {
+      "company": "Keystone",
+      "team": "上海南野科技有限公司",
+      "period": "2022.09 - 2025.02",
+      "summary": "负责官网、商城与钱包生态相关产品的前后端开发维护。",
+      "highlights": [
+        "负责 Keystone 官网 / 商城功能开发与性能优化，落地固件更新、设备校验、NFT 锁屏传输等功能，并推进构建链路优化。",
+        "参与 MetaMask Snap 闪电网络功能开发，补齐浏览器插件与钱包交互流程。",
+        "完成 Keystone 与 XVerse 钱包的连接、发送、签名等核心交互适配。"
+      ],
+      "stack": [
+        "Vue",
+        "Django",
+        "Shopify API",
+        "MetaMask Snap",
+        "XVerse"
+      ]
+    },
+    {
+      "company": "上海芦鸣科技有限公司",
+      "team": "技术部",
+      "period": "2020.05 - 2022.08",
+      "summary": "负责内容平台、广告投放系统与报表系统的前后端开发。",
+      "highlights": [
+        "负责基于 Vue + GraphQL 的内容平台开发，结合 PWA、缓存和打包优化提升性能，并参与 TypeScript GraphQL API 建设。",
+        "独立完成 AD 报表系统前后端设计开发，支持定时同步、规则生成与复杂 Excel 报表处理。",
+        "负责 Linux 部署、pm2 服务管理与日志维护。"
+      ],
+      "stack": [
+        "Vue",
+        "Apollo Client",
+        "GraphQL",
+        "Prisma",
+        "Vite",
+        "pm2"
+      ]
+    },
+    {
+      "company": "上海洋佩信息技术有限公司",
+      "team": "技术部",
+      "period": "2019.05 - 2020.03",
+      "summary": "参与企业官网、选号平台与小程序项目开发，覆盖 Vue / Nuxt 官网、Vue + Koa + MongoDB 平台及 UniApp 多端项目。",
+      "highlights": [
+        "参与官网 SEO 与性能优化。",
+        "参与前后端联调与多端交付。"
+      ],
+      "stack": [
+        "Vue",
+        "Nuxt",
+        "Koa",
+        "MongoDB",
+        "UniApp"
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "name": "script2video",
+      "period": "2026.04 - 至今",
+      "summary": "AI 视频生成工具，将简短描述转换为剧本、分镜与镜头提示词，再结合视频模型生成并拼接为长视频。",
+      "bullets": [
+        "把脚本拆解、镜头描述、视频生成与拼接串成可用链路。",
+        "面向真实用户提供在线 Demo 与持续迭代。"
+      ],
+      "tags": [
+        "AI",
+        "Video",
+        "TypeScript"
+      ],
+      "links": [
+        {
+          "label": "GitHub",
+          "href": "https://github.com/reaink/script2video"
+        },
+        {
+          "label": "Demo",
+          "href": "https://s2v.rea.ink"
+        }
+      ]
+    },
+    {
+      "name": "星空输入法 / KeyTao",
+      "period": "2018.02 - 至今",
+      "summary": "开源输入法社区项目发起与长期维护者，持续推进输入方案、词库系统、在线练习与安装器等子项目。",
+      "bullets": [
+        "长期维护社区协作、词库更新与发布流程。",
+        "覆盖 Web、安装器与输入法相关工具链。"
+      ],
+      "tags": [
+        "Open Source",
+        "IME",
+        "Rust",
+        "TypeScript"
+      ],
+      "links": [
+        {
+          "label": "GitHub",
+          "href": "https://github.com/xkinput"
+        },
+        {
+          "label": "Platform",
+          "href": "https://keytao.rea.ink"
+        }
+      ]
+    }
+  ],
+  "education": [
+    {
+      "school": "西安工业大学",
+      "period": "2015.08 - 2018.05"
+    }
+  ],
+  "extras": [
+    "长期使用 Linux / NixOS 构建个人工作环境。",
+    "具备持续开源维护经验，能独立推进项目和长期迭代。"
+  ]
+}

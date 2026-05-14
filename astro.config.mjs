@@ -12,6 +12,9 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
+    optimizeDeps: {
+      exclude: ['html2pdf.js']
+    },
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src')
