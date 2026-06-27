@@ -1,0 +1,51 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import { getCollection } from "astro:content";
+import SectionPanel from "@/components/home/SectionPanel.astro";
+import PostList from "@/components/home/PostList.astro";
+import { Hash } from "lucide-react";
+import { homeData, serializePosts } from "@/lib/home";
+
+const allPosts = await getCollection("blog");
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog");
+  const tagList = [...new Set(posts.flatMap((post) => post.data.tags))].filter(Boolean);
+
+  return tagList.map((tag) => ({
+    params: { tag },
+    props: { tag },
+  }));
+}
+
+const { tag } = Astro.props;
+const taggedPosts = allPosts
+  .filter((post) => post.data.tags.includes(tag))
+  .sort((a, b) => {
+    const dateA = a.data.date ? new Date(a.data.date).getTime() : 0;
+    const dateB = b.data.date ? new Date(b.data.date).getTime() : 0;
+    return dateB - dateA;
+  });
+
+const serializedPosts = serializePosts(taggedPosts);
+---
+
+<Layout title={`#${tag} · 博客 · Reaink`} description={`Reaink 博客中标记为 #${tag} 的文章`}>
+  <div class="mb-8">
+    <a
+      href="/blogs"
+      class="mb-5 inline-flex text-sm text-muted-foreground transition-colors hover:text-foreground"
+    >
+      ← 返回全部博客
+    </a>
+    <h1 class="mb-2 flex items-center gap-2 text-3xl font-bold">
+      <Hash className="h-7 w-7 text-primary" />
+      {tag}
+    </h1>
+    <p class="text-muted-foreground">共 {taggedPosts.length} 篇文章</p>
+  </div>
+
+  <SectionPanel title={homeData.sections.posts.title} icon={homeData.sections.posts.icon}>
+    <PostList posts={serializedPosts} dateFormat="long" showReadingMinutes={true} />
+  </SectionPanel>
+</Layout>

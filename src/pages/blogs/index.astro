@@ -4,7 +4,7 @@ import { getCollection } from 'astro:content';
 import SectionPanel from '@/components/home/SectionPanel.astro';
 import PostList from '@/components/home/PostList.astro';
 import { FileText } from 'lucide-react';
-import { homeData, serializePosts } from '@/lib/home';
+import { getCategoryHref, homeData, serializePosts } from '@/lib/home';
 
 const posts = (await getCollection('blog')).sort((a, b) => {
   const dateA = a.data.date ? new Date(a.data.date).getTime() : 0;
@@ -31,9 +31,12 @@ const categories = [...new Set(posts.flatMap((p) => p.data.categories))].filter(
   {categories.length > 0 && (
     <div class="flex flex-wrap gap-2 mb-8">
       {categories.map((cat) => (
-        <span class="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground">
+        <a
+          href={getCategoryHref(cat)}
+          class="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground transition-colors hover:border-primary/35 hover:bg-primary/8 hover:text-primary"
+        >
           {cat}
-        </span>
+        </a>
       ))}
     </div>
   )}

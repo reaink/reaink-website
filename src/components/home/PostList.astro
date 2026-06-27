@@ -1,6 +1,6 @@
 ---
 import { iconMap } from "@/lib/icons";
-import { getPostCategoryVisual, type SerializedPost } from "@/lib/home";
+import { getPostCategoryVisual, getTagHref, type SerializedPost } from "@/lib/home";
 
 interface Props {
   posts: SerializedPost[];
@@ -18,26 +18,39 @@ const { posts, dateFormat = "short", showReadingMinutes = true } = Astro.props;
       const CategoryIcon = iconMap[categoryVisual.icon];
 
       return (
-        <a
-          href={`/blogs/${post.id}`}
+        <article
           class="group -mx-2 flex flex-col items-start gap-2 rounded-[1.25rem] px-2 py-3.5 transition-colors hover:bg-white/70 dark:hover:bg-white/6 sm:-mx-3 sm:flex-row sm:items-center sm:gap-4 sm:px-3"
         >
-          <div
+          <a
+            href={`/blogs/${post.id}`}
+            aria-label={`阅读《${post.title}》`}
             class={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${categoryVisual.iconClass}`}
           >
             <CategoryIcon className="h-4 w-4" />
-          </div>
+          </a>
           <div class="min-w-0 flex-1">
-            <div class="truncate text-sm font-medium transition-colors group-hover:text-primary">
+            <a
+              href={`/blogs/${post.id}`}
+              class="block truncate text-sm font-medium transition-colors group-hover:text-primary"
+            >
               {post.title}
-            </div>
+            </a>
             <div class="mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-1">
               {post.tags.slice(0, 3).map((tag) => (
-                <span class="text-xs text-muted-foreground">#{tag}</span>
+                <a
+                  href={getTagHref(tag)}
+                  class="rounded-full px-1 text-xs text-muted-foreground transition-colors hover:bg-primary/8 hover:text-primary"
+                >
+                  #{tag}
+                </a>
               ))}
             </div>
           </div>
-          <div class="space-y-0.5 text-left sm:shrink-0 sm:text-right">
+          <a
+            href={`/blogs/${post.id}`}
+            aria-label={`阅读《${post.title}》`}
+            class="space-y-0.5 text-left sm:shrink-0 sm:text-right"
+          >
             {post.date && (
               <div class="text-xs text-muted-foreground">
                 {new Date(post.date).toLocaleDateString(
@@ -53,8 +66,8 @@ const { posts, dateFormat = "short", showReadingMinutes = true } = Astro.props;
                 {post.readingMinutes} 分钟阅读
               </div>
             )}
-          </div>
-        </a>
+          </a>
+        </article>
       );
     })
   }

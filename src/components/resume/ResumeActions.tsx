@@ -4,10 +4,7 @@ import { Button } from '@/components/ui/button';
 
 type ResumeActionState = 'idle' | 'printing';
 
-interface ResumeActionsProps {
-  targetId?: string;
-}
-export default function ResumeActions({ targetId }: ResumeActionsProps) {
+export default function ResumeActions() {
   const [actionState, setActionState] = useState<ResumeActionState>('idle');
 
   useEffect(() => {

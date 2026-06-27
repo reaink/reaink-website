@@ -148,6 +148,14 @@ export function getPostCategoryVisual(categories: string[]) {
   };
 }
 
+export function getTagHref(tag: string) {
+  return `/blogs/tags/${encodeURIComponent(tag)}`;
+}
+
+export function getCategoryHref(category: string) {
+  return `/blogs/categories/${encodeURIComponent(category)}`;
+}
+
 export function selectProjectsByRepositories(projects: HomeProject[], repositories: string[]) {
   const repositorySet = new Set(repositories.map((repository) => repository.toLowerCase()));
 

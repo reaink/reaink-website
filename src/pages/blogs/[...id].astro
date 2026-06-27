@@ -1,6 +1,7 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import { getCollection, render } from "astro:content";
+import { getCategoryHref, getTagHref } from "@/lib/home";
 
 export async function getStaticPaths() {
   const posts = await getCollection("blog");
@@ -20,9 +21,12 @@ const { Content } = await render(post);
       <div class="flex flex-wrap gap-2 mb-3">
         {
           post.data.categories.map((cat) => (
-            <span class="rounded-full bg-primary/10 px-3 py-0.5 text-xs text-primary">
+            <a
+              href={getCategoryHref(cat)}
+              class="rounded-full bg-primary/10 px-3 py-0.5 text-xs text-primary transition-colors hover:bg-primary/16"
+            >
               {cat}
-            </span>
+            </a>
           ))
         }
       </div>
@@ -39,11 +43,18 @@ const { Content } = await render(post);
             </time>
           )
         }
-        {
-          post.data.tags.length > 0 && (
-            <span>{post.data.tags.map((t) => `#${t}`).join(" ")}</span>
-          )
-        }
+        <div class="flex flex-wrap items-center gap-1.5">
+          {
+            post.data.tags.map((tag) => (
+              <a
+                href={getTagHref(tag)}
+                class="rounded-full px-1.5 py-0.5 text-muted-foreground transition-colors hover:bg-primary/8 hover:text-primary"
+              >
+                #{tag}
+              </a>
+            ))
+          }
+        </div>
       </div>
     </header>
     <Content />

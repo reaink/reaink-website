@@ -285,7 +285,6 @@ const toggleButtonCls = 'h-12 w-12 rounded-full border border-white/70 bg-white/
 export default function HeroGrid({
   posts: _posts,
   featuredProjects,
-  projects,
   totalProjectCount,
   githubUsername,
   twitterUsername,
@@ -294,7 +293,6 @@ export default function HeroGrid({
 }: {
   posts: SerializedPost[];
   featuredProjects: HomeProject[];
-  projects: HomeProject[];
   totalProjectCount: number;
   githubUsername: string;
   twitterUsername: string;

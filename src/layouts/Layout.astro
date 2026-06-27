@@ -71,8 +71,9 @@ const BrandIcon = iconMap[homeData.brand.logo.icon] ?? Sparkles;
     </script>
     <!-- busuanzi site statistics -->
     <script
+      is:inline
       async
-      src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+      src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
   </head>
   <body
     class="relative min-h-screen overflow-x-hidden bg-background text-foreground antialiased selection:bg-primary/12 selection:text-foreground"
@@ -290,11 +291,7 @@ const BrandIcon = iconMap[homeData.brand.logo.icon] ?? Sparkles;
           }
         };
 
-        if (typeof media.addEventListener === "function") {
-          media.addEventListener("change", handleMediaChange);
-        } else {
-          media.addListener(handleMediaChange);
-        }
+        media.addEventListener("change", handleMediaChange);
       })();
     </script>
   </body>
