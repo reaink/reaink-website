@@ -107,7 +107,7 @@
     "projectRepositories": [
       "reaink/script2video",
       "xkinput/keytao-bot",
-      "xkinput/keytao-installer"
+      "xkinput/keytao-app"
     ]
   },
   "social": {
@@ -172,17 +172,18 @@
       "url": "https://github.com/xkinput/keytao-bot"
     },
     {
-      "repository": "xkinput/keytao-installer",
-      "name": "keytao-installer",
-      "desc": "KeyTao(键道) 安装器",
+      "repository": "xkinput/keytao-app",
+      "name": "keytao-app",
+      "desc": "键道输入法",
       "tags": [
-        "Rust"
+        "Rust",
+        "Dart"
       ],
       "stars": "0",
       "forks": "0",
       "color": "bg-orange-500",
-      "initial": "KI",
-      "url": "https://github.com/xkinput/keytao-installer"
+      "initial": "KA",
+      "url": "https://github.com/xkinput/keytao-app"
     }
   ],
   "postCategoryIcons": [
