@@ -123,8 +123,8 @@
         "ime",
         "rime"
       ],
-      "stars": "126",
-      "forks": "13",
+      "stars": "138",
+      "forks": "17",
       "color": "bg-indigo-500",
       "initial": "KT",
       "url": "https://github.com/xkinput/KeyTao",
@@ -137,8 +137,8 @@
       "tags": [
         "TypeScript"
       ],
-      "stars": "2",
-      "forks": "0",
+      "stars": "4",
+      "forks": "1",
       "color": "bg-sky-500",
       "initial": "KN",
       "url": "https://github.com/xkinput/keytao-next",
@@ -151,8 +151,8 @@
       "tags": [
         "TypeScript"
       ],
-      "stars": "0",
-      "forks": "0",
+      "stars": "2",
+      "forks": "2",
       "color": "bg-sky-500",
       "initial": "S2",
       "url": "https://github.com/reaink/script2video",
@@ -165,7 +165,7 @@
       "tags": [
         "Python"
       ],
-      "stars": "0",
+      "stars": "3",
       "forks": "0",
       "color": "bg-emerald-500",
       "initial": "KB",
@@ -179,8 +179,8 @@
         "Rust",
         "Dart"
       ],
-      "stars": "0",
-      "forks": "0",
+      "stars": "2",
+      "forks": "2",
       "color": "bg-orange-500",
       "initial": "KA",
       "url": "https://github.com/xkinput/keytao-app"
